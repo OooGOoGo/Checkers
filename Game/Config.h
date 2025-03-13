@@ -7,24 +7,24 @@ using json = nlohmann::json;
 
 class Config
 {
-  public:
+public:
     Config()
     {
-        reload();
+        reload();  // При создании объекта загружаем настройки из файла.
     }
 
     void reload()
     {
-        std::ifstream fin(project_path + "settings.json");
-        fin >> config;
-        fin.close();
+        std::ifstream fin(project_path + "settings.json");  // Открываем файл настроек.
+        fin >> config;  // Читаем JSON и сохраняем в объект config.
+        fin.close();    // Закрываем файл.
     }
 
-    auto operator()(const string &setting_dir, const string &setting_name) const
+    auto operator()(const string& setting_dir, const string& setting_name) const
     {
-        return config[setting_dir][setting_name];
+        return config[setting_dir][setting_name];  // Получаем значение настройки по её пути в JSON.
     }
 
-  private:
-    json config;
+private:
+    json config;  // Объект для хранения настроек в формате JSON.
 };
