@@ -21,7 +21,23 @@ public:
     }
 
     // Поиск лучших ходов для текущего цвета
-    vector<move_pos> find_best_turns(const bool color);
+    vector<move_pos> find_best_turns(const bool color)
+    {
+        next_best_state.clear(); // Очистка состояний
+        next_move.clear(); // Очистка ходов
+
+        // Запуск рекурсивного поиска лучшего хода
+        find_first_best_turn(board->get_board(), color, -1, -1, 0);
+
+        // Формирование последовательности ходов
+        int cur_state = 0;
+        vector<move_pos> res;
+        do {
+            res.push_back(next_move[cur_state]); // Добавление хода в результат
+            cur_state = next_best_state[cur_state]; // Переход к следующему состоянию
+        } while (cur_state != -1 && next_move[cur_state].x != -1); // Пока есть ходы
+        return res;
+    }
 
 private:
     // Выполнение хода на доске
@@ -72,13 +88,107 @@ private:
         return (b + bq * q_coef) / (w + wq * q_coef); // Возвращаем оценку
     }
 
-    // Рекурсивный поиск лучшего хода
-    double find_first_best_turn(vector<vector<POS_T>> mtx, const bool color, const POS_T x, const POS_T y, size_t state,
-        double alpha = -1);
+    // Рекурсивный поиск лучшего хода (первый уровень)
+    double find_first_best_turn(vector<vector<POS_T>> mtx, const bool color, const POS_T x, const POS_T y, size_t state, double alpha = -1)
+    {
+        next_best_state.push_back(-1); // Инициализация состояния
+        next_move.emplace_back(-1, -1, -1, -1); // Инициализация хода
+        double best_score = -1; // Лучший счет
+
+        // Поиск всех возможных ходов для текущего состояния
+        if (state != 0)
+            find_turns(x, y, mtx);
+        auto turns_now = turns; // Текущие ходы
+        bool have_beats_now = have_beats; // Есть ли взятия
+
+        // Если нет взятий и это не начальное состояние, переходим к следующему уровню
+        if (!have_beats_now && state != 0) {
+            return find_best_turns_rec(mtx, 1 - color, 0, alpha);
+        }
+
+        // Перебор всех возможных ходов
+        for (auto turn : turns_now) {
+            size_t next_state = next_move.size();
+            double score;
+
+            // Если есть взятия, продолжаем поиск
+            if (have_beats_now) {
+                score = find_first_best_turn(make_turn(mtx, turn), color, turn.x2, turn.y2, next_state, best_score);
+            }
+            else {
+                score = find_best_turns_rec(make_turn(mtx, turn), 1 - color, 0, best_score);
+            }
+
+            // Обновление лучшего счета
+            if (score > best_score) {
+                best_score = score;
+                next_best_state[state] = (have_beats_now ? int(next_state) : -1);
+                next_move[state] = turn;
+            }
+        }
+        return best_score; // Возврат лучшего счета
+    }
 
     // Рекурсивный поиск ходов с альфа-бета отсечением
-    double find_best_turns_rec(vector<vector<POS_T>> mtx, const bool color, const size_t depth, double alpha = -1,
-        double beta = INF + 1, const POS_T x = -1, const POS_T y = -1);
+    double find_best_turns_rec(vector<vector<POS_T>> mtx, const bool color, const size_t depth, double alpha = -1, double beta = INF + 1, const POS_T x = -1, const POS_T y = -1)
+    {
+        if (depth == Max_depth) // Если достигнута максимальная глубина
+        {
+            return calc_score(mtx, (depth % 2 == color)); // Возврат оценки
+        }
+
+        // Поиск ходов для текущего состояния
+        if (x != -1) {
+            find_turns(x, y, mtx);
+        }
+        else {
+            find_turns(color, mtx);
+        }
+        auto turns_now = turns; // Текущие ходы
+        bool have_beats_now = have_beats; // Есть ли взятия
+
+        // Если нет взятий и это не начальное состояние, переходим к следующему уровню
+        if (!have_beats_now && x != -1) {
+            return find_best_turns_rec(mtx, 1 - color, depth + 1, alpha, beta);
+        }
+
+        // Если ходов нет
+        if (turns.empty()) {
+            return (depth % 2 ? 0 : INF); // Возврат INF или 0
+        }
+
+        double min_score = INF + 1; // Минимальный счет
+        double max_score = -1; // Максимальный счет
+
+        // Перебор всех возможных ходов
+        for (auto turn : turns_now) {
+            double score = 0.0;
+
+            // Если нет взятий и это начальное состояние
+            if (!have_beats_now && x == -1) {
+                score = find_best_turns_rec(make_turn(mtx, turn), 1 - color, depth + 1, alpha, beta);
+            }
+            else {
+                score = find_best_turns_rec(make_turn(mtx, turn), color, depth, alpha, beta, turn.x2, turn.y2);
+            }
+
+            // Обновление минимального и максимального счета
+            min_score = min(min_score, score);
+            max_score = max(max_score, score);
+
+            // Альфа-бета отсечение
+            if (depth % 2)
+                alpha = max(alpha, max_score);
+            else
+                beta = min(beta, min_score);
+
+            // Если отсечение сработало
+            if (optimization != "O0" && alpha >= beta) {
+                return (depth % 2 ? max_score + 1 : min_score - 1);
+            }
+        }
+        return (depth % 2 ? max_score : min_score); // Возврат счета
+    }
 
 public:
     // Поиск ходов для цвета
