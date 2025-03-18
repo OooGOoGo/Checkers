@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <fstream>
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -10,21 +10,21 @@ class Config
 public:
     Config()
     {
-        reload();  // При создании объекта загружаем настройки из файла.
+        reload();  // РџСЂРё СЃРѕР·РґР°РЅРёРё РѕР±СЉРµРєС‚Р° Р·Р°РіСЂСѓР¶Р°РµРј РЅР°СЃС‚СЂРѕР№РєРё РёР· С„Р°Р№Р»Р°.
     }
 
     void reload()
     {
-        std::ifstream fin(project_path + "settings.json");  // Открываем файл настроек.
-        fin >> config;  // Читаем JSON и сохраняем в объект config.
-        fin.close();    // Закрываем файл.
+        std::ifstream fin(project_path + "settings.json");  // РћС‚РєСЂС‹РІР°РµРј С„Р°Р№Р» РЅР°СЃС‚СЂРѕРµРє.
+        fin >> config;  // Р§РёС‚Р°РµРј JSON Рё СЃРѕС…СЂР°РЅСЏРµРј РІ РѕР±СЉРµРєС‚ config.
+        fin.close();    // Р—Р°РєСЂС‹РІР°РµРј С„Р°Р№Р».
     }
 
     auto operator()(const string& setting_dir, const string& setting_name) const
     {
-        return config[setting_dir][setting_name];  // Получаем значение настройки по её пути в JSON.
+        return config[setting_dir][setting_name];  // РџРѕР»СѓС‡Р°РµРј Р·РЅР°С‡РµРЅРёРµ РЅР°СЃС‚СЂРѕР№РєРё РїРѕ РµС‘ РїСѓС‚Рё РІ JSON.
     }
 
 private:
-    json config;  // Объект для хранения настроек в формате JSON.
+    json config;  // РћР±СЉРµРєС‚ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РЅР°СЃС‚СЂРѕРµРє РІ С„РѕСЂРјР°С‚Рµ JSON.
 };

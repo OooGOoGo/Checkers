@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -16,49 +16,49 @@
 
 using namespace std;
 
-// Класс, представляющий игровую доску
+// РљР»Р°СЃСЃ, РїСЂРµРґСЃС‚Р°РІР»СЏСЋС‰РёР№ РёРіСЂРѕРІСѓСЋ РґРѕСЃРєСѓ
 class Board
 {
 public:
     Board() = default;
-    // Конструктор, принимающий ширину и высоту окна
+    // РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ, РїСЂРёРЅРёРјР°СЋС‰РёР№ С€РёСЂРёРЅСѓ Рё РІС‹СЃРѕС‚Сѓ РѕРєРЅР°
     Board(const unsigned int W, const unsigned int H) : W(W), H(H)
     {
     }
 
-    // Инициализация и отрисовка начальной доски
+    // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Рё РѕС‚СЂРёСЃРѕРІРєР° РЅР°С‡Р°Р»СЊРЅРѕР№ РґРѕСЃРєРё
     int start_draw()
     {
-        if (SDL_Init(SDL_INIT_EVERYTHING) != 0)  // Инициализация SDL
+        if (SDL_Init(SDL_INIT_EVERYTHING) != 0)  // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ SDL
         {
             print_exception("SDL_Init can't init SDL2 lib");
             return 1;
         }
-        if (W == 0 || H == 0)  // Если размеры окна не заданы, используем размеры экрана
+        if (W == 0 || H == 0)  // Р•СЃР»Рё СЂР°Р·РјРµСЂС‹ РѕРєРЅР° РЅРµ Р·Р°РґР°РЅС‹, РёСЃРїРѕР»СЊР·СѓРµРј СЂР°Р·РјРµСЂС‹ СЌРєСЂР°РЅР°
         {
             SDL_DisplayMode dm;
-            if (SDL_GetDesktopDisplayMode(0, &dm))  // Получение текущего режима дисплея
+            if (SDL_GetDesktopDisplayMode(0, &dm))  // РџРѕР»СѓС‡РµРЅРёРµ С‚РµРєСѓС‰РµРіРѕ СЂРµР¶РёРјР° РґРёСЃРїР»РµСЏ
             {
                 print_exception("SDL_GetDesktopDisplayMode can't get desctop display mode");
                 return 1;
             }
-            W = min(dm.w, dm.h);  // Устанавливаем размеры окна
+            W = min(dm.w, dm.h);  // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЂР°Р·РјРµСЂС‹ РѕРєРЅР°
             W -= W / 15;
             H = W;
         }
-        win = SDL_CreateWindow("Checkers", 0, H / 30, W, H, SDL_WINDOW_RESIZABLE);  // Создание окна
+        win = SDL_CreateWindow("Checkers", 0, H / 30, W, H, SDL_WINDOW_RESIZABLE);  // РЎРѕР·РґР°РЅРёРµ РѕРєРЅР°
         if (win == nullptr)
         {
             print_exception("SDL_CreateWindow can't create window");
             return 1;
         }
-        ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);  // Создание рендерера
+        ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);  // РЎРѕР·РґР°РЅРёРµ СЂРµРЅРґРµСЂРµСЂР°
         if (ren == nullptr)
         {
             print_exception("SDL_CreateRenderer can't create renderer");
             return 1;
         }
-        // Загрузка текстур для доски, фигур и кнопок
+        // Р—Р°РіСЂСѓР·РєР° С‚РµРєСЃС‚СѓСЂ РґР»СЏ РґРѕСЃРєРё, С„РёРіСѓСЂ Рё РєРЅРѕРїРѕРє
         board = IMG_LoadTexture(ren, board_path.c_str());
         w_piece = IMG_LoadTexture(ren, piece_white_path.c_str());
         b_piece = IMG_LoadTexture(ren, piece_black_path.c_str());
@@ -66,204 +66,204 @@ public:
         b_queen = IMG_LoadTexture(ren, queen_black_path.c_str());
         back = IMG_LoadTexture(ren, back_path.c_str());
         replay = IMG_LoadTexture(ren, replay_path.c_str());
-        if (!board || !w_piece || !b_piece || !w_queen || !b_queen || !back || !replay)  // Проверка загрузки текстур
+        if (!board || !w_piece || !b_piece || !w_queen || !b_queen || !back || !replay)  // РџСЂРѕРІРµСЂРєР° Р·Р°РіСЂСѓР·РєРё С‚РµРєСЃС‚СѓСЂ
         {
             print_exception("IMG_LoadTexture can't load main textures from " + textures_path);
             return 1;
         }
-        SDL_GetRendererOutputSize(ren, &W, &H);  // Получение текущих размеров рендерера
-        make_start_mtx();  // Создание начальной расстановки фигур
-        rerender();  // Отрисовка доски
+        SDL_GetRendererOutputSize(ren, &W, &H);  // РџРѕР»СѓС‡РµРЅРёРµ С‚РµРєСѓС‰РёС… СЂР°Р·РјРµСЂРѕРІ СЂРµРЅРґРµСЂРµСЂР°
+        make_start_mtx();  // РЎРѕР·РґР°РЅРёРµ РЅР°С‡Р°Р»СЊРЅРѕР№ СЂР°СЃСЃС‚Р°РЅРѕРІРєРё С„РёРіСѓСЂ
+        rerender();  // РћС‚СЂРёСЃРѕРІРєР° РґРѕСЃРєРё
         return 0;
     }
 
-    // Перерисовка доски (сброс истории и начальной расстановки)
+    // РџРµСЂРµСЂРёСЃРѕРІРєР° РґРѕСЃРєРё (СЃР±СЂРѕСЃ РёСЃС‚РѕСЂРёРё Рё РЅР°С‡Р°Р»СЊРЅРѕР№ СЂР°СЃСЃС‚Р°РЅРѕРІРєРё)
     void redraw()
     {
-        game_results = -1;  // Сброс результата игры
-        history_mtx.clear();  // Очистка истории ходов
-        history_beat_series.clear();  // Очистка истории серий ударов
-        make_start_mtx();  // Создание начальной расстановки
-        clear_active();  // Сброс активной ячейки
-        clear_highlight();  // Сброс выделения ячеек
+        game_results = -1;  // РЎР±СЂРѕСЃ СЂРµР·СѓР»СЊС‚Р°С‚Р° РёРіСЂС‹
+        history_mtx.clear();  // РћС‡РёСЃС‚РєР° РёСЃС‚РѕСЂРёРё С…РѕРґРѕРІ
+        history_beat_series.clear();  // РћС‡РёСЃС‚РєР° РёСЃС‚РѕСЂРёРё СЃРµСЂРёР№ СѓРґР°СЂРѕРІ
+        make_start_mtx();  // РЎРѕР·РґР°РЅРёРµ РЅР°С‡Р°Р»СЊРЅРѕР№ СЂР°СЃСЃС‚Р°РЅРѕРІРєРё
+        clear_active();  // РЎР±СЂРѕСЃ Р°РєС‚РёРІРЅРѕР№ СЏС‡РµР№РєРё
+        clear_highlight();  // РЎР±СЂРѕСЃ РІС‹РґРµР»РµРЅРёСЏ СЏС‡РµРµРє
     }
 
-    // Перемещение фигуры по заданному ходу
+    // РџРµСЂРµРјРµС‰РµРЅРёРµ С„РёРіСѓСЂС‹ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ С…РѕРґСѓ
     void move_piece(move_pos turn, const int beat_series = 0)
     {
-        if (turn.xb != -1)  // Если ход включает взятие фигуры
+        if (turn.xb != -1)  // Р•СЃР»Рё С…РѕРґ РІРєР»СЋС‡Р°РµС‚ РІР·СЏС‚РёРµ С„РёРіСѓСЂС‹
         {
-            mtx[turn.xb][turn.yb] = 0;  // Удаление битой фигуры
+            mtx[turn.xb][turn.yb] = 0;  // РЈРґР°Р»РµРЅРёРµ Р±РёС‚РѕР№ С„РёРіСѓСЂС‹
         }
-        move_piece(turn.x, turn.y, turn.x2, turn.y2, beat_series);  // Перемещение фигуры
+        move_piece(turn.x, turn.y, turn.x2, turn.y2, beat_series);  // РџРµСЂРµРјРµС‰РµРЅРёРµ С„РёРіСѓСЂС‹
     }
 
-    // Перемещение фигуры из одной позиции в другую
+    // РџРµСЂРµРјРµС‰РµРЅРёРµ С„РёРіСѓСЂС‹ РёР· РѕРґРЅРѕР№ РїРѕР·РёС†РёРё РІ РґСЂСѓРіСѓСЋ
     void move_piece(const POS_T i, const POS_T j, const POS_T i2, const POS_T j2, const int beat_series = 0)
     {
-        if (mtx[i2][j2])  // Проверка, что конечная позиция свободна
+        if (mtx[i2][j2])  // РџСЂРѕРІРµСЂРєР°, С‡С‚Рѕ РєРѕРЅРµС‡РЅР°СЏ РїРѕР·РёС†РёСЏ СЃРІРѕР±РѕРґРЅР°
         {
             throw runtime_error("final position is not empty, can't move");
         }
-        if (!mtx[i][j])  // Проверка, что начальная позиция не пуста
+        if (!mtx[i][j])  // РџСЂРѕРІРµСЂРєР°, С‡С‚Рѕ РЅР°С‡Р°Р»СЊРЅР°СЏ РїРѕР·РёС†РёСЏ РЅРµ РїСѓСЃС‚Р°
         {
             throw runtime_error("begin position is empty, can't move");
         }
-        if ((mtx[i][j] == 1 && i2 == 0) || (mtx[i][j] == 2 && i2 == 7))  // Превращение в дамку
+        if ((mtx[i][j] == 1 && i2 == 0) || (mtx[i][j] == 2 && i2 == 7))  // РџСЂРµРІСЂР°С‰РµРЅРёРµ РІ РґР°РјРєСѓ
             mtx[i][j] += 2;
-        mtx[i2][j2] = mtx[i][j];  // Перемещение фигуры
-        drop_piece(i, j);  // Удаление фигуры из начальной позиции
-        add_history(beat_series);  // Добавление хода в историю
+        mtx[i2][j2] = mtx[i][j];  // РџРµСЂРµРјРµС‰РµРЅРёРµ С„РёРіСѓСЂС‹
+        drop_piece(i, j);  // РЈРґР°Р»РµРЅРёРµ С„РёРіСѓСЂС‹ РёР· РЅР°С‡Р°Р»СЊРЅРѕР№ РїРѕР·РёС†РёРё
+        add_history(beat_series);  // Р”РѕР±Р°РІР»РµРЅРёРµ С…РѕРґР° РІ РёСЃС‚РѕСЂРёСЋ
     }
 
-    // Удаление фигуры с доски
+    // РЈРґР°Р»РµРЅРёРµ С„РёРіСѓСЂС‹ СЃ РґРѕСЃРєРё
     void drop_piece(const POS_T i, const POS_T j)
     {
-        mtx[i][j] = 0;  // Очистка ячейки
-        rerender();  // Перерисовка доски
+        mtx[i][j] = 0;  // РћС‡РёСЃС‚РєР° СЏС‡РµР№РєРё
+        rerender();  // РџРµСЂРµСЂРёСЃРѕРІРєР° РґРѕСЃРєРё
     }
 
-    // Превращение фигуры в дамку
+    // РџСЂРµРІСЂР°С‰РµРЅРёРµ С„РёРіСѓСЂС‹ РІ РґР°РјРєСѓ
     void turn_into_queen(const POS_T i, const POS_T j)
     {
-        if (mtx[i][j] == 0 || mtx[i][j] > 2)  // Проверка, что фигура может стать дамкой
+        if (mtx[i][j] == 0 || mtx[i][j] > 2)  // РџСЂРѕРІРµСЂРєР°, С‡С‚Рѕ С„РёРіСѓСЂР° РјРѕР¶РµС‚ СЃС‚Р°С‚СЊ РґР°РјРєРѕР№
         {
             throw runtime_error("can't turn into queen in this position");
         }
-        mtx[i][j] += 2;  // Превращение в дамку
-        rerender();  // Перерисовка доски
+        mtx[i][j] += 2;  // РџСЂРµРІСЂР°С‰РµРЅРёРµ РІ РґР°РјРєСѓ
+        rerender();  // РџРµСЂРµСЂРёСЃРѕРІРєР° РґРѕСЃРєРё
     }
 
-    // Получение текущего состояния доски
+    // РџРѕР»СѓС‡РµРЅРёРµ С‚РµРєСѓС‰РµРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ РґРѕСЃРєРё
     vector<vector<POS_T>> get_board() const
     {
         return mtx;
     }
 
-    // Подсветка ячеек
+    // РџРѕРґСЃРІРµС‚РєР° СЏС‡РµРµРє
     void highlight_cells(vector<pair<POS_T, POS_T>> cells)
     {
-        for (auto pos : cells)  // Подсветка каждой ячейки
+        for (auto pos : cells)  // РџРѕРґСЃРІРµС‚РєР° РєР°Р¶РґРѕР№ СЏС‡РµР№РєРё
         {
             POS_T x = pos.first, y = pos.second;
             is_highlighted_[x][y] = 1;
         }
-        rerender();  // Перерисовка доски
+        rerender();  // РџРµСЂРµСЂРёСЃРѕРІРєР° РґРѕСЃРєРё
     }
 
-    // Сброс подсветки ячеек
+    // РЎР±СЂРѕСЃ РїРѕРґСЃРІРµС‚РєРё СЏС‡РµРµРє
     void clear_highlight()
     {
         for (POS_T i = 0; i < 8; ++i)
         {
-            is_highlighted_[i].assign(8, 0);  // Очистка массива подсветки
+            is_highlighted_[i].assign(8, 0);  // РћС‡РёСЃС‚РєР° РјР°СЃСЃРёРІР° РїРѕРґСЃРІРµС‚РєРё
         }
-        rerender();  // Перерисовка доски
+        rerender();  // РџРµСЂРµСЂРёСЃРѕРІРєР° РґРѕСЃРєРё
     }
 
-    // Установка активной ячейки
+    // РЈСЃС‚Р°РЅРѕРІРєР° Р°РєС‚РёРІРЅРѕР№ СЏС‡РµР№РєРё
     void set_active(const POS_T x, const POS_T y)
     {
         active_x = x;
         active_y = y;
-        rerender();  // Перерисовка доски
+        rerender();  // РџРµСЂРµСЂРёСЃРѕРІРєР° РґРѕСЃРєРё
     }
 
-    // Сброс активной ячейки
+    // РЎР±СЂРѕСЃ Р°РєС‚РёРІРЅРѕР№ СЏС‡РµР№РєРё
     void clear_active()
     {
         active_x = -1;
         active_y = -1;
-        rerender();  // Перерисовка доски
+        rerender();  // РџРµСЂРµСЂРёСЃРѕРІРєР° РґРѕСЃРєРё
     }
 
-    // Проверка, подсвечена ли ячейка
+    // РџСЂРѕРІРµСЂРєР°, РїРѕРґСЃРІРµС‡РµРЅР° Р»Рё СЏС‡РµР№РєР°
     bool is_highlighted(const POS_T x, const POS_T y)
     {
         return is_highlighted_[x][y];
     }
 
-    // Отмена последнего хода
+    // РћС‚РјРµРЅР° РїРѕСЃР»РµРґРЅРµРіРѕ С…РѕРґР°
     void rollback()
     {
-        auto beat_series = max(1, *(history_beat_series.rbegin()));  // Получение серии ударов
-        while (beat_series-- && history_mtx.size() > 1)  // Отмена ходов
+        auto beat_series = max(1, *(history_beat_series.rbegin()));  // РџРѕР»СѓС‡РµРЅРёРµ СЃРµСЂРёРё СѓРґР°СЂРѕРІ
+        while (beat_series-- && history_mtx.size() > 1)  // РћС‚РјРµРЅР° С…РѕРґРѕРІ
         {
             history_mtx.pop_back();
             history_beat_series.pop_back();
         }
-        mtx = *(history_mtx.rbegin());  // Восстановление состояния доски
-        clear_highlight();  // Сброс подсветки
-        clear_active();  // Сброс активной ячейки
+        mtx = *(history_mtx.rbegin());  // Р’РѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РґРѕСЃРєРё
+        clear_highlight();  // РЎР±СЂРѕСЃ РїРѕРґСЃРІРµС‚РєРё
+        clear_active();  // РЎР±СЂРѕСЃ Р°РєС‚РёРІРЅРѕР№ СЏС‡РµР№РєРё
     }
 
-    // Отображение результата игры
+    // РћС‚РѕР±СЂР°Р¶РµРЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚Р° РёРіСЂС‹
     void show_final(const int res)
     {
-        game_results = res;  // Установка результата игры
-        rerender();  // Перерисовка доски
+        game_results = res;  // РЈСЃС‚Р°РЅРѕРІРєР° СЂРµР·СѓР»СЊС‚Р°С‚Р° РёРіСЂС‹
+        rerender();  // РџРµСЂРµСЂРёСЃРѕРІРєР° РґРѕСЃРєРё
     }
 
-    // Сброс размеров окна
+    // РЎР±СЂРѕСЃ СЂР°Р·РјРµСЂРѕРІ РѕРєРЅР°
     void reset_window_size()
     {
-        SDL_GetRendererOutputSize(ren, &W, &H);  // Получение текущих размеров окна
-        rerender();  // Перерисовка доски
+        SDL_GetRendererOutputSize(ren, &W, &H);  // РџРѕР»СѓС‡РµРЅРёРµ С‚РµРєСѓС‰РёС… СЂР°Р·РјРµСЂРѕРІ РѕРєРЅР°
+        rerender();  // РџРµСЂРµСЂРёСЃРѕРІРєР° РґРѕСЃРєРё
     }
 
-    // Завершение работы с SDL
+    // Р—Р°РІРµСЂС€РµРЅРёРµ СЂР°Р±РѕС‚С‹ СЃ SDL
     void quit()
     {
-        SDL_DestroyTexture(board);  // Уничтожение текстур
+        SDL_DestroyTexture(board);  // РЈРЅРёС‡С‚РѕР¶РµРЅРёРµ С‚РµРєСЃС‚СѓСЂ
         SDL_DestroyTexture(w_piece);
         SDL_DestroyTexture(b_piece);
         SDL_DestroyTexture(w_queen);
         SDL_DestroyTexture(b_queen);
         SDL_DestroyTexture(back);
         SDL_DestroyTexture(replay);
-        SDL_DestroyRenderer(ren);  // Уничтожение рендерера
-        SDL_DestroyWindow(win);  // Уничтожение окна
-        SDL_Quit();  // Завершение работы SDL
+        SDL_DestroyRenderer(ren);  // РЈРЅРёС‡С‚РѕР¶РµРЅРёРµ СЂРµРЅРґРµСЂРµСЂР°
+        SDL_DestroyWindow(win);  // РЈРЅРёС‡С‚РѕР¶РµРЅРёРµ РѕРєРЅР°
+        SDL_Quit();  // Р—Р°РІРµСЂС€РµРЅРёРµ СЂР°Р±РѕС‚С‹ SDL
     }
 
     ~Board()
     {
         if (win)
-            quit();  // Завершение работы при уничтожении объекта
+            quit();  // Р—Р°РІРµСЂС€РµРЅРёРµ СЂР°Р±РѕС‚С‹ РїСЂРё СѓРЅРёС‡С‚РѕР¶РµРЅРёРё РѕР±СЉРµРєС‚Р°
     }
 
 private:
-    // Добавление текущего состояния доски в историю
+    // Р”РѕР±Р°РІР»РµРЅРёРµ С‚РµРєСѓС‰РµРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ РґРѕСЃРєРё РІ РёСЃС‚РѕСЂРёСЋ
     void add_history(const int beat_series = 0)
     {
-        history_mtx.push_back(mtx);  // Сохранение состояния доски
-        history_beat_series.push_back(beat_series);  // Сохранение серии ударов
+        history_mtx.push_back(mtx);  // РЎРѕС…СЂР°РЅРµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РґРѕСЃРєРё
+        history_beat_series.push_back(beat_series);  // РЎРѕС…СЂР°РЅРµРЅРёРµ СЃРµСЂРёРё СѓРґР°СЂРѕРІ
     }
 
-    // Создание начальной расстановки фигур
+    // РЎРѕР·РґР°РЅРёРµ РЅР°С‡Р°Р»СЊРЅРѕР№ СЂР°СЃСЃС‚Р°РЅРѕРІРєРё С„РёРіСѓСЂ
     void make_start_mtx()
     {
         for (POS_T i = 0; i < 8; ++i)
         {
             for (POS_T j = 0; j < 8; ++j)
             {
-                mtx[i][j] = 0;  // Очистка ячейки
-                if (i < 3 && (i + j) % 2 == 1)  // Расстановка черных фигур
+                mtx[i][j] = 0;  // РћС‡РёСЃС‚РєР° СЏС‡РµР№РєРё
+                if (i < 3 && (i + j) % 2 == 1)  // Р Р°СЃСЃС‚Р°РЅРѕРІРєР° С‡РµСЂРЅС‹С… С„РёРіСѓСЂ
                     mtx[i][j] = 2;
-                if (i > 4 && (i + j) % 2 == 1)  // Расстановка белых фигур
+                if (i > 4 && (i + j) % 2 == 1)  // Р Р°СЃСЃС‚Р°РЅРѕРІРєР° Р±РµР»С‹С… С„РёРіСѓСЂ
                     mtx[i][j] = 1;
             }
         }
-        add_history();  // Сохранение начального состояния
+        add_history();  // РЎРѕС…СЂР°РЅРµРЅРёРµ РЅР°С‡Р°Р»СЊРЅРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ
     }
 
-    // Перерисовка всех элементов доски
+    // РџРµСЂРµСЂРёСЃРѕРІРєР° РІСЃРµС… СЌР»РµРјРµРЅС‚РѕРІ РґРѕСЃРєРё
     void rerender()
     {
-        SDL_RenderClear(ren);  // Очистка рендерера
-        SDL_RenderCopy(ren, board, NULL, NULL);  // Отрисовка доски
+        SDL_RenderClear(ren);  // РћС‡РёСЃС‚РєР° СЂРµРЅРґРµСЂРµСЂР°
+        SDL_RenderCopy(ren, board, NULL, NULL);  // РћС‚СЂРёСЃРѕРІРєР° РґРѕСЃРєРё
 
-        // Отрисовка фигур
+        // РћС‚СЂРёСЃРѕРІРєР° С„РёРіСѓСЂ
         for (POS_T i = 0; i < 8; ++i)
         {
             for (POS_T j = 0; j < 8; ++j)
@@ -284,11 +284,11 @@ private:
                 else
                     piece_texture = b_queen;
 
-                SDL_RenderCopy(ren, piece_texture, NULL, &rect);  // Отрисовка фигуры
+                SDL_RenderCopy(ren, piece_texture, NULL, &rect);  // РћС‚СЂРёСЃРѕРІРєР° С„РёРіСѓСЂС‹
             }
         }
 
-        // Отрисовка подсветки ячеек
+        // РћС‚СЂРёСЃРѕРІРєР° РїРѕРґСЃРІРµС‚РєРё СЏС‡РµРµРє
         SDL_SetRenderDrawColor(ren, 0, 255, 0, 0);
         const double scale = 2.5;
         SDL_RenderSetScale(ren, scale, scale);
@@ -300,27 +300,27 @@ private:
                     continue;
                 SDL_Rect cell{ int(W * (j + 1) / 10 / scale), int(H * (i + 1) / 10 / scale), int(W / 10 / scale),
                               int(H / 10 / scale) };
-                SDL_RenderDrawRect(ren, &cell);  // Отрисовка подсветки
+                SDL_RenderDrawRect(ren, &cell);  // РћС‚СЂРёСЃРѕРІРєР° РїРѕРґСЃРІРµС‚РєРё
             }
         }
 
-        // Отрисовка активной ячейки
+        // РћС‚СЂРёСЃРѕРІРєР° Р°РєС‚РёРІРЅРѕР№ СЏС‡РµР№РєРё
         if (active_x != -1)
         {
             SDL_SetRenderDrawColor(ren, 255, 0, 0, 0);
             SDL_Rect active_cell{ int(W * (active_y + 1) / 10 / scale), int(H * (active_x + 1) / 10 / scale),
                                  int(W / 10 / scale), int(H / 10 / scale) };
-            SDL_RenderDrawRect(ren, &active_cell);  // Отрисовка активной ячейки
+            SDL_RenderDrawRect(ren, &active_cell);  // РћС‚СЂРёСЃРѕРІРєР° Р°РєС‚РёРІРЅРѕР№ СЏС‡РµР№РєРё
         }
         SDL_RenderSetScale(ren, 1, 1);
 
-        // Отрисовка кнопок "Назад" и "Переиграть"
+        // РћС‚СЂРёСЃРѕРІРєР° РєРЅРѕРїРѕРє "РќР°Р·Р°Рґ" Рё "РџРµСЂРµРёРіСЂР°С‚СЊ"
         SDL_Rect rect_left{ W / 40, H / 40, W / 15, H / 15 };
         SDL_RenderCopy(ren, back, NULL, &rect_left);
         SDL_Rect replay_rect{ W * 109 / 120, H / 40, W / 15, H / 15 };
         SDL_RenderCopy(ren, replay, NULL, &replay_rect);
 
-        // Отрисовка результата игры
+        // РћС‚СЂРёСЃРѕРІРєР° СЂРµР·СѓР»СЊС‚Р°С‚Р° РёРіСЂС‹
         if (game_results != -1)
         {
             string result_path = draw_path;
@@ -335,17 +335,17 @@ private:
                 return;
             }
             SDL_Rect res_rect{ W / 5, H * 3 / 10, W * 3 / 5, H * 2 / 5 };
-            SDL_RenderCopy(ren, result_texture, NULL, &res_rect);  // Отрисовка результата
+            SDL_RenderCopy(ren, result_texture, NULL, &res_rect);  // РћС‚СЂРёСЃРѕРІРєР° СЂРµР·СѓР»СЊС‚Р°С‚Р°
             SDL_DestroyTexture(result_texture);
         }
 
-        SDL_RenderPresent(ren);  // Обновление рендерера
-        SDL_Delay(10);  // Задержка для стабильности
+        SDL_RenderPresent(ren);  // РћР±РЅРѕРІР»РµРЅРёРµ СЂРµРЅРґРµСЂРµСЂР°
+        SDL_Delay(10);  // Р—Р°РґРµСЂР¶РєР° РґР»СЏ СЃС‚Р°Р±РёР»СЊРЅРѕСЃС‚Рё
         SDL_Event windowEvent;
-        SDL_PollEvent(&windowEvent);  // Обработка событий
+        SDL_PollEvent(&windowEvent);  // РћР±СЂР°Р±РѕС‚РєР° СЃРѕР±С‹С‚РёР№
     }
 
-    // Логирование ошибок
+    // Р›РѕРіРёСЂРѕРІР°РЅРёРµ РѕС€РёР±РѕРє
     void print_exception(const string& text) {
         ofstream fout(project_path + "log.txt", ios_base::app);
         fout << "Error: " << text << ". " << SDL_GetError() << endl;
@@ -353,22 +353,22 @@ private:
     }
 
 public:
-    int W = 0;  // Ширина окна
-    int H = 0;  // Высота окна
-    vector<vector<vector<POS_T>>> history_mtx;  // История состояний доски
+    int W = 0;  // РЁРёСЂРёРЅР° РѕРєРЅР°
+    int H = 0;  // Р’С‹СЃРѕС‚Р° РѕРєРЅР°
+    vector<vector<vector<POS_T>>> history_mtx;  // РСЃС‚РѕСЂРёСЏ СЃРѕСЃС‚РѕСЏРЅРёР№ РґРѕСЃРєРё
 
 private:
-    SDL_Window* win = nullptr;  // Окно SDL
-    SDL_Renderer* ren = nullptr;  // Рендерер SDL
-    // Текстуры
-    SDL_Texture* board = nullptr;  // Текстура доски
-    SDL_Texture* w_piece = nullptr;  // Текстура белой фигуры
-    SDL_Texture* b_piece = nullptr;  // Текстура черной фигуры
-    SDL_Texture* w_queen = nullptr;  // Текстура белой дамки
-    SDL_Texture* b_queen = nullptr;  // Текстура черной дамки
-    SDL_Texture* back = nullptr;  // Текстура кнопки "Назад"
-    SDL_Texture* replay = nullptr;  // Текстура кнопки "Переиграть"
-    // Пути к текстурам
+    SDL_Window* win = nullptr;  // РћРєРЅРѕ SDL
+    SDL_Renderer* ren = nullptr;  // Р РµРЅРґРµСЂРµСЂ SDL
+    // РўРµРєСЃС‚СѓСЂС‹
+    SDL_Texture* board = nullptr;  // РўРµРєСЃС‚СѓСЂР° РґРѕСЃРєРё
+    SDL_Texture* w_piece = nullptr;  // РўРµРєСЃС‚СѓСЂР° Р±РµР»РѕР№ С„РёРіСѓСЂС‹
+    SDL_Texture* b_piece = nullptr;  // РўРµРєСЃС‚СѓСЂР° С‡РµСЂРЅРѕР№ С„РёРіСѓСЂС‹
+    SDL_Texture* w_queen = nullptr;  // РўРµРєСЃС‚СѓСЂР° Р±РµР»РѕР№ РґР°РјРєРё
+    SDL_Texture* b_queen = nullptr;  // РўРµРєСЃС‚СѓСЂР° С‡РµСЂРЅРѕР№ РґР°РјРєРё
+    SDL_Texture* back = nullptr;  // РўРµРєСЃС‚СѓСЂР° РєРЅРѕРїРєРё "РќР°Р·Р°Рґ"
+    SDL_Texture* replay = nullptr;  // РўРµРєСЃС‚СѓСЂР° РєРЅРѕРїРєРё "РџРµСЂРµРёРіСЂР°С‚СЊ"
+    // РџСѓС‚Рё Рє С‚РµРєСЃС‚СѓСЂР°Рј
     const string textures_path = project_path + "Textures/";
     const string board_path = textures_path + "board.png";
     const string piece_white_path = textures_path + "piece_white.png";
@@ -380,15 +380,15 @@ private:
     const string draw_path = textures_path + "draw.png";
     const string back_path = textures_path + "back.png";
     const string replay_path = textures_path + "replay.png";
-    // Координаты активной ячейки
+    // РљРѕРѕСЂРґРёРЅР°С‚С‹ Р°РєС‚РёРІРЅРѕР№ СЏС‡РµР№РєРё
     int active_x = -1, active_y = -1;
-    // Результат игры
+    // Р РµР·СѓР»СЊС‚Р°С‚ РёРіСЂС‹
     int game_results = -1;
-    // Матрица подсветки ячеек
+    // РњР°С‚СЂРёС†Р° РїРѕРґСЃРІРµС‚РєРё СЏС‡РµРµРє
     vector<vector<bool>> is_highlighted_ = vector<vector<bool>>(8, vector<bool>(8, 0));
-    // Матрица состояния доски
-    // 1 - белая фигура, 2 - черная фигура, 3 - белая дамка, 4 - черная дамка
+    // РњР°С‚СЂРёС†Р° СЃРѕСЃС‚РѕСЏРЅРёСЏ РґРѕСЃРєРё
+    // 1 - Р±РµР»Р°СЏ С„РёРіСѓСЂР°, 2 - С‡РµСЂРЅР°СЏ С„РёРіСѓСЂР°, 3 - Р±РµР»Р°СЏ РґР°РјРєР°, 4 - С‡РµСЂРЅР°СЏ РґР°РјРєР°
     vector<vector<POS_T>> mtx = vector<vector<POS_T>>(8, vector<POS_T>(8, 0));
-    // История серий ударов
+    // РСЃС‚РѕСЂРёСЏ СЃРµСЂРёР№ СѓРґР°СЂРѕРІ
     vector<int> history_beat_series;
 };
